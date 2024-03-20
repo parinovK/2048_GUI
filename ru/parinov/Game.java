@@ -13,7 +13,6 @@ import java.util.List;
 
 public class Game{
     private static Game instance;
-    private boolean isInitializeField = false;
     private List<List<Square>> allCoordinates;
     private int[][] matrixField;
 
@@ -22,10 +21,6 @@ public class Game{
             instance = new Game();
         }
         return instance;
-    }
-
-    public boolean isInitializeField() {
-        return isInitializeField;
     }
 
     public List<List<Square>> getAllCoordinates() {
@@ -65,7 +60,6 @@ public class Game{
             }
         }
         allCoordinates = ReverseMatrix();
-        isInitializeField = true;
     }
 
     private void createFieldCLI() {
@@ -87,7 +81,7 @@ public class Game{
         }
     }
 
-    public List<List<Square>> ReverseMatrix() {
+    private List<List<Square>> ReverseMatrix() {
         List<List<Square>> reverseMatrix = new ArrayList<>();
         for (int i = 0; i < allCoordinates.size(); i++) {
             for (int j = 0; j < allCoordinates.get(i).size(); j++) {
@@ -129,7 +123,7 @@ public class Game{
 
     private void addedDigitToMatrix(){//добавляет одну двойку на каждом ходу
         //двойки добавляются в любое свободное место
-        List<Integer> positionZero = new ArrayList<Integer>();
+        List<Integer> positionZero = new ArrayList<>();
 
         outputFieldCLI();
 
