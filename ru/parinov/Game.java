@@ -233,6 +233,7 @@ public class Game{
                     addedDigitInField = true;
             }
         }
+        System.out.println("Added digit: " + addedDigitInField);
         return addedDigitInField;
     }
 
@@ -289,31 +290,33 @@ public class Game{
         return false;
     }
 
-    private boolean findDuplicate(Shift shift, int line, int indexLine){
+    private boolean findDuplicate(Shift shift, int line, int column){
+        if (matrixField[line][column] == 0)
+            return false;
         if (shift == Shift.LEFT) {
-            if (matrixField[line][indexLine] == matrixField[line][indexLine - 1]) {
-                matrixField[line][indexLine - 1] += matrixField[line][indexLine];
-                matrixField[line][indexLine] = 0;
+            if (matrixField[line][column] == matrixField[line][column - 1]) {
+                matrixField[line][column - 1] += matrixField[line][column];
+                matrixField[line][column] = 0;
                 return true;
             }
         }
         if (shift == Shift.RIGHT)
-            if (matrixField[line][indexLine] == matrixField[line][indexLine + 1]) {
-                matrixField[line][indexLine + 1] += matrixField[line][indexLine];
-                matrixField[line][indexLine] = 0;
+            if (matrixField[line][column] == matrixField[line][column + 1]) {
+                matrixField[line][column + 1] += matrixField[line][column];
+                matrixField[line][column] = 0;
                 return true;
             }
         if (shift == Shift.UP)
-            if (matrixField[line][indexLine] == matrixField[line - 1][indexLine]) {
-                matrixField[line - 1][indexLine] += matrixField[line][indexLine];
-                matrixField[line][indexLine] = 0;
+            if (matrixField[line][column] == matrixField[line - 1][column]) {
+                matrixField[line - 1][column] += matrixField[line][column];
+                matrixField[line][column] = 0;
                 return true;
             }
 
         if (shift == Shift.DOWN)
-            if ((line+1) < GameConfig.fieldSize && matrixField[line][indexLine] == matrixField[line+1][indexLine]) {
-                matrixField[line + 1][indexLine] += matrixField[line][indexLine];
-                matrixField[line][indexLine] = 0;
+            if ((line+1) < GameConfig.fieldSize && matrixField[line][column] == matrixField[line+1][column]) {
+                matrixField[line + 1][column] += matrixField[line][column];
+                matrixField[line][column] = 0;
                 return true;
             }
         return false;
