@@ -88,6 +88,9 @@ fabric.properties
 # BlueJ files
 *.ctxt
 
+# .iml files
+2048_GUI.iml
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -168,3 +171,4 @@ replay_pid*
 *_LOCAL_*.txt
 *_REMOTE_*.txt
 
+!/2048_GUI.iml

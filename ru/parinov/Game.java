@@ -285,11 +285,4 @@ public class Game{
                 matrixField[line][indexLine] = 0;
             }
     }
-
-    private boolean findDuplicate(int line, int indexLine) {
-        return (indexLine > 0 && matrixField[line][indexLine] == matrixField[line][indexLine - 1]) ||
-                (indexLine + 1 < GameConfig.fieldSize) && matrixField[line][indexLine] == matrixField[line][indexLine + 1] ||
-                line > 0 && matrixField[line][indexLine] == matrixField[line - 1][indexLine] ||
-                ((line + 1) < GameConfig.fieldSize && matrixField[line][indexLine] == matrixField[line + 1][indexLine]);
-    }
 }
