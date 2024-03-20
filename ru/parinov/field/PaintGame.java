@@ -23,11 +23,13 @@ public class PaintGame extends JPanel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (Game.getInstance().isInitializeField() ){//!Game.getInstance().getIsGameOver()) {
+        if (Game.getInstance().isInitializeField() && !Game.getInstance().validateGameOver()){
             paintForField(g);
             paintPuzzles(g);
         }
         else{
+            paintForField(g);
+            paintPuzzles(g);
             System.out.println("Game over!");
         }
     }

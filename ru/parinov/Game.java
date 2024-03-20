@@ -16,7 +16,6 @@ public class Game{
     private boolean isInitializeField = false;
     private List<List<Square>> allCoordinates;
     private int[][] matrixField;
-    private boolean isGameOver = false;
 
     public static Game getInstance(){
         if (instance == null){
@@ -37,15 +36,19 @@ public class Game{
         return matrixField;
     }
 
-    public boolean getIsGameOver(){
-        return isGameOver;
-    }
-
     private Game() {
         createFieldCLI();
         createFieldGUI();
         System.out.println("Matrix begin:");
         outputFieldCLI();
+    }
+
+    public boolean validateGameOver(){
+        for (int i = 0; i < ConfigGame.fieldSize; i++)
+            for (int j = 0; j < ConfigGame.fieldSize; j++)
+                if (matrixField[i][j] == 0)
+                    return false;
+        return true;
     }
 
     private void createFieldGUI() {
@@ -108,6 +111,8 @@ public class Game{
     }
 
     public void shiftMatrix(Shift shift, PaintGame game){
+        if (validateGameOver())
+            return;
         switch (shift) {
             case LEFT -> shiftLeft();
             case RIGHT -> shiftRight();
@@ -289,21 +294,5 @@ public class Game{
                 (indexLine + 1 < ConfigGame.fieldSize) && matrixField[line][indexLine] == matrixField[line][indexLine + 1] ||
                 line > 0 && matrixField[line][indexLine] == matrixField[line - 1][indexLine] ||
                 ((line + 1) < ConfigGame.fieldSize && matrixField[line][indexLine] == matrixField[line + 1][indexLine]);
-    }
-
-    private void isGameOver(){//проверить конец ли игры. Если да - вернет тру
-        //проверить. Если поле заполнено и в поле не больше одного повторяющегося элемента или эти элементы не рядом
-        int count = 0; //количество проверенных элементов
-        for (int i = 0; i < ConfigGame.fieldSize; i++){
-            for (int j = 0; j < ConfigGame.fieldSize; j++){
-                if (matrixField[i][j] != 0 //если элемент существует, но скрестить его не с чем и это последний элемент
-                        && !findDuplicate(i,j)
-                        && count == ConfigGame.fieldSize* ConfigGame.fieldSize){
-                    isGameOver = true;
-                }
-                count++;
-            }
-        }
-        isGameOver = true;
     }
 }

@@ -24,7 +24,6 @@ public class MainWindow extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
-        setResizable(false);
     }
 
     public static void main(String[] args){
