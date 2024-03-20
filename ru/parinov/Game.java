@@ -110,23 +110,23 @@ public class Game{
     public void shiftMatrix(Shift shift, PaintGame game){
         if (validateGameOver())
             return;
+        boolean addedDigitInField = false;
         switch (shift) {
-            case LEFT -> shiftLeft();
-            case RIGHT -> shiftRight();
-            case UP -> shiftUp();
-            case DOWN -> shiftDown();
+            case LEFT -> addedDigitInField = shiftLeft();
+            case RIGHT -> addedDigitInField = shiftRight();
+            case UP -> addedDigitInField = shiftUp();
+            case DOWN -> addedDigitInField = shiftDown();
         }
-        addedDigitToMatrix();
+        addedDigitToMatrix(addedDigitInField);
         outputFieldCLI();
         game.repaint();
     }
 
-    private void addedDigitToMatrix(){//добавляет одну двойку на каждом ходу
-        //двойки добавляются в любое свободное место
+    private void addedDigitToMatrix(boolean addedDigitInField){
+        if (!addedDigitInField)//если добавление разрешено
+            return;
         List<Integer> positionZero = new ArrayList<>();
-
         outputFieldCLI();
-
         for (int i = 0; i < GameConfig.fieldSize; i++) {
             for (int j = 0; j < GameConfig.fieldSize; j++) {
                 if (matrixField[i][j] == 0) {
@@ -139,78 +139,106 @@ public class Game{
         matrixField[positionZero.get(randomPlace)][positionZero.get(randomPlace+1)] = 2;
     }
 
-    private void shiftLeft(){
+    private boolean shiftLeft(){
+        boolean addedDigitInField = false;
         boolean isShift = true;
         while (isShift) {
             for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
                 for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                    if (matrixField[i][j] != 0)
+                    if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.LEFT, i, j);//максимально сдвигаем по нулям
+                        if (isShift)
+                            addedDigitInField = true;
+
+                    }
                 }
             }
         }
         for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-            for (int j = GameConfig.fieldSize - 1; j >=1; j--) {
-                findDuplicate(Shift.LEFT, i, j);
+            for (int j = GameConfig.fieldSize - 1; j >= 1; j--) {
+                isShift = findDuplicate(Shift.LEFT, i, j);
+                if (isShift)
+                    addedDigitInField = true;
             }
         }
+        return addedDigitInField;
     }
 
-    private void shiftRight(){
+    private boolean shiftRight(){
+        boolean addedDigitInField = false;
         boolean isShift = true;
         while (isShift) {
             for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
                 for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.RIGHT, i, j);//максимально сдвигаем по нулям
+                        if (isShift)
+                            addedDigitInField = true;
                     }
                 }
             }
         }
         for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-                for (int j = (GameConfig.fieldSize - 1) -1; j >= 0; j--) {
-                    findDuplicate(Shift.RIGHT, i, j);
-                }
+            for (int j = (GameConfig.fieldSize - 1) - 1; j >= 0; j--) {
+                isShift = findDuplicate(Shift.RIGHT, i, j);
+                if (isShift)
+                    addedDigitInField = true;
             }
+        }
+        return addedDigitInField;
     }
 
-    private void shiftUp(){
+    private boolean shiftUp(){
+        boolean addedDigitInField = false;
         boolean isShift = true;
         while (isShift) {
             for (int i = GameConfig.fieldSize; i >= 0; i--) {
                 for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.UP, i, j);//максимально сдвигаем по нулям
+                        if (isShift)
+                            addedDigitInField = true;
                     }
                 }
             }
         }
         for (int i = GameConfig.fieldSize - 1; i >= 1; i--) {
             for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                findDuplicate(Shift.UP, i, j);
+                isShift = findDuplicate(Shift.UP, i, j);
+                if (isShift)
+                    addedDigitInField = true;
             }
         }
+        return addedDigitInField;
     }
 
-    private void shiftDown(){
+    private boolean shiftDown(){
+        boolean addedDigitInField = false;
         boolean isShift = true;
         while (isShift) {
             for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
                 for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.DOWN, i, j);//максимально сдвигаем по нулям
+                        if (isShift)
+                            addedDigitInField = true;
                     }
                 }
             }
         }
-        for (int i = (GameConfig.fieldSize-1) -1; i >= 0; i--) {
-            for (int j = GameConfig.fieldSize-1; j >= 0; j--) {
-                findDuplicate(Shift.DOWN, i, j);
+        for (int i = (GameConfig.fieldSize - 1) - 1; i >= 0; i--) {
+            for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
+                isShift = findDuplicate(Shift.DOWN, i, j);
+                if (isShift)
+                    addedDigitInField = true;
             }
         }
+        return addedDigitInField;
     }
 
     private boolean findZeroInLine(Shift shift, int index_line, int index_digit_in_line){ //вернет позицию первого нуля в строке
+        if (matrixField[index_line][index_digit_in_line] == 0)
+            return false;
         int temp;
         if (shift == Shift.LEFT){
             temp = index_digit_in_line;
@@ -261,28 +289,33 @@ public class Game{
         return false;
     }
 
-    private void findDuplicate(Shift shift, int line, int indexLine){
+    private boolean findDuplicate(Shift shift, int line, int indexLine){
         if (shift == Shift.LEFT) {
             if (matrixField[line][indexLine] == matrixField[line][indexLine - 1]) {
                 matrixField[line][indexLine - 1] += matrixField[line][indexLine];
                 matrixField[line][indexLine] = 0;
+                return true;
             }
         }
         if (shift == Shift.RIGHT)
-                if (matrixField[line][indexLine] == matrixField[line][indexLine + 1]) {
-                    matrixField[line][indexLine + 1] += matrixField[line][indexLine];
-                    matrixField[line][indexLine] = 0;
-                }
+            if (matrixField[line][indexLine] == matrixField[line][indexLine + 1]) {
+                matrixField[line][indexLine + 1] += matrixField[line][indexLine];
+                matrixField[line][indexLine] = 0;
+                return true;
+            }
         if (shift == Shift.UP)
             if (matrixField[line][indexLine] == matrixField[line - 1][indexLine]) {
                 matrixField[line - 1][indexLine] += matrixField[line][indexLine];
                 matrixField[line][indexLine] = 0;
+                return true;
             }
 
         if (shift == Shift.DOWN)
             if ((line+1) < GameConfig.fieldSize && matrixField[line][indexLine] == matrixField[line+1][indexLine]) {
                 matrixField[line + 1][indexLine] += matrixField[line][indexLine];
                 matrixField[line][indexLine] = 0;
+                return true;
             }
+        return false;
     }
 }
