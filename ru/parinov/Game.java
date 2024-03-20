@@ -32,7 +32,7 @@ public class Game{
     }
 
     private Game() {
-        if (ConfigGame.debugCLI)
+        if (GameConfig.debugCLI)
             System.out.println("Debug CLI is enabled.");
         createFieldCLI();
         createFieldGUI();
@@ -40,8 +40,8 @@ public class Game{
     }
 
     public boolean validateGameOver(){
-        for (int i = 0; i < ConfigGame.fieldSize; i++)
-            for (int j = 0; j < ConfigGame.fieldSize; j++)
+        for (int i = 0; i < GameConfig.fieldSize; i++)
+            for (int j = 0; j < GameConfig.fieldSize; j++)
                 if (matrixField[i][j] == 0)
                     return false;
         return true;
@@ -49,8 +49,8 @@ public class Game{
 
     private void createFieldGUI() {
         CreateFieldGUI field = new CreateFieldGUI(
-                ConfigGame.DESIRED_SIZE.height/ ConfigGame.fieldSize,
-                ConfigGame.DESIRED_SIZE.height
+                GameConfig.DESIRED_SIZE.height/ GameConfig.fieldSize,
+                GameConfig.DESIRED_SIZE.height
         );
         allCoordinates = field.calculateCoordinates();
         for (int i = 0; i < allCoordinates.size(); i++) {
@@ -63,18 +63,18 @@ public class Game{
     }
 
     private void createFieldCLI() {
-        matrixField = new int[ConfigGame.fieldSize][ConfigGame.fieldSize];
-        for (int i = 0; i < ConfigGame.fieldSize; i++)
-            for (int j = 0; j < ConfigGame.fieldSize; j++)
+        matrixField = new int[GameConfig.fieldSize][GameConfig.fieldSize];
+        for (int i = 0; i < GameConfig.fieldSize; i++)
+            for (int j = 0; j < GameConfig.fieldSize; j++)
                 matrixField[i][j] = 0;
         setBeginPlacesToField(matrixField);
     }
 
     private void outputFieldCLI() {
-        if (ConfigGame.debugCLI) {
+        if (GameConfig.debugCLI) {
             System.out.println("\nMatrix for debug: ");
-            for (int i = 0; i < ConfigGame.fieldSize; i++) {
-                for (int j = 0; j < ConfigGame.fieldSize; j++)
+            for (int i = 0; i < GameConfig.fieldSize; i++) {
+                for (int j = 0; j < GameConfig.fieldSize; j++)
                     System.out.print(matrixField[i][j] + "\t");
                 System.out.println();
             }
@@ -93,7 +93,7 @@ public class Game{
     }
 
     private void setBeginPlacesToField(int[][] matrixField) {
-        int maxValue = (ConfigGame.fieldSize * ConfigGame.fieldSize) - 1;
+        int maxValue = (GameConfig.fieldSize * GameConfig.fieldSize) - 1;
         int minValue = 0;
         Set<Integer> places = new HashSet<>();
 
@@ -102,8 +102,8 @@ public class Game{
         }
         int line;
         for (var place : places) {
-            line = place / ConfigGame.fieldSize;
-            matrixField[line][place - (line * ConfigGame.fieldSize)] = 2;
+            line = place / GameConfig.fieldSize;
+            matrixField[line][place - (line * GameConfig.fieldSize)] = 2;
         }
     }
 
@@ -127,8 +127,8 @@ public class Game{
 
         outputFieldCLI();
 
-        for (int i = 0; i < ConfigGame.fieldSize; i++) {
-            for (int j = 0; j < ConfigGame.fieldSize; j++) {
+        for (int i = 0; i < GameConfig.fieldSize; i++) {
+            for (int j = 0; j < GameConfig.fieldSize; j++) {
                 if (matrixField[i][j] == 0) {
                     positionZero.add(i);
                     positionZero.add(j);
@@ -142,15 +142,15 @@ public class Game{
     private void shiftLeft(){
         boolean isShift = true;
         while (isShift) {
-            for (int i = ConfigGame.fieldSize - 1; i >= 0; i--) {
-                for (int j = ConfigGame.fieldSize - 1; j >= 0; j--) {
+            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
+                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0)
                         isShift = findZeroInLine(Shift.LEFT, i, j);//максимально сдвигаем по нулям
                 }
             }
         }
-        for (int i = ConfigGame.fieldSize - 1; i >= 0; i--) {
-            for (int j = ConfigGame.fieldSize - 1; j >=1; j--) {
+        for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
+            for (int j = GameConfig.fieldSize - 1; j >=1; j--) {
                 findDuplicate(Shift.LEFT, i, j);
             }
         }
@@ -159,16 +159,16 @@ public class Game{
     private void shiftRight(){
         boolean isShift = true;
         while (isShift) {
-            for (int i = ConfigGame.fieldSize - 1; i >= 0; i--) {
-                for (int j = ConfigGame.fieldSize - 1; j >= 0; j--) {
+            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
+                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.RIGHT, i, j);//максимально сдвигаем по нулям
                     }
                 }
             }
         }
-        for (int i = ConfigGame.fieldSize - 1; i >= 0; i--) {
-                for (int j = (ConfigGame.fieldSize - 1) -1; j >= 0; j--) {
+        for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
+                for (int j = (GameConfig.fieldSize - 1) -1; j >= 0; j--) {
                     findDuplicate(Shift.RIGHT, i, j);
                 }
             }
@@ -177,16 +177,16 @@ public class Game{
     private void shiftUp(){
         boolean isShift = true;
         while (isShift) {
-            for (int i = ConfigGame.fieldSize; i >= 0; i--) {
-                for (int j = ConfigGame.fieldSize - 1; j >= 0; j--) {
+            for (int i = GameConfig.fieldSize; i >= 0; i--) {
+                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.UP, i, j);//максимально сдвигаем по нулям
                     }
                 }
             }
         }
-        for (int i = ConfigGame.fieldSize - 1; i >= 1; i--) {
-            for (int j = ConfigGame.fieldSize - 1; j >= 0; j--) {
+        for (int i = GameConfig.fieldSize - 1; i >= 1; i--) {
+            for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                 findDuplicate(Shift.UP, i, j);
             }
         }
@@ -195,16 +195,16 @@ public class Game{
     private void shiftDown(){
         boolean isShift = true;
         while (isShift) {
-            for (int i = ConfigGame.fieldSize - 1; i >= 0; i--) {
-                for (int j = ConfigGame.fieldSize - 1; j >= 0; j--) {
+            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
+                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
                     if (matrixField[i][j] != 0) {
                         isShift = findZeroInLine(Shift.DOWN, i, j);//максимально сдвигаем по нулям
                     }
                 }
             }
         }
-        for (int i = (ConfigGame.fieldSize-1) -1; i >= 0; i--) {
-            for (int j = ConfigGame.fieldSize-1; j >= 0; j--) {
+        for (int i = (GameConfig.fieldSize-1) -1; i >= 0; i--) {
+            for (int j = GameConfig.fieldSize-1; j >= 0; j--) {
                 findDuplicate(Shift.DOWN, i, j);
             }
         }
@@ -225,7 +225,7 @@ public class Game{
         }
         if (shift == Shift.RIGHT){
             temp = index_digit_in_line;
-            while (temp+1 < ConfigGame.fieldSize && matrixField[index_line][temp+1] == 0){
+            while (temp+1 < GameConfig.fieldSize && matrixField[index_line][temp+1] == 0){
                 temp++;
             }
             if (temp != index_digit_in_line) {
@@ -249,7 +249,7 @@ public class Game{
 
         if (shift == Shift.DOWN){
             temp = index_line;
-            while (temp+1 < ConfigGame.fieldSize && matrixField[temp+1][index_digit_in_line] == 0){
+            while (temp+1 < GameConfig.fieldSize && matrixField[temp+1][index_digit_in_line] == 0){
                 temp++;
             }
             if (temp != index_line){
@@ -280,7 +280,7 @@ public class Game{
             }
 
         if (shift == Shift.DOWN)
-            if ((line+1) < ConfigGame.fieldSize && matrixField[line][indexLine] == matrixField[line+1][indexLine]) {
+            if ((line+1) < GameConfig.fieldSize && matrixField[line][indexLine] == matrixField[line+1][indexLine]) {
                 matrixField[line + 1][indexLine] += matrixField[line][indexLine];
                 matrixField[line][indexLine] = 0;
             }
@@ -288,8 +288,8 @@ public class Game{
 
     private boolean findDuplicate(int line, int indexLine) {
         return (indexLine > 0 && matrixField[line][indexLine] == matrixField[line][indexLine - 1]) ||
-                (indexLine + 1 < ConfigGame.fieldSize) && matrixField[line][indexLine] == matrixField[line][indexLine + 1] ||
+                (indexLine + 1 < GameConfig.fieldSize) && matrixField[line][indexLine] == matrixField[line][indexLine + 1] ||
                 line > 0 && matrixField[line][indexLine] == matrixField[line - 1][indexLine] ||
-                ((line + 1) < ConfigGame.fieldSize && matrixField[line][indexLine] == matrixField[line + 1][indexLine]);
+                ((line + 1) < GameConfig.fieldSize && matrixField[line][indexLine] == matrixField[line + 1][indexLine]);
     }
 }
