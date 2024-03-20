@@ -1,14 +1,13 @@
 //логика игры
 
-package mainCode;
+package ru.parinov;
 
-import field.PaintGame;
-import field.Shift;
-import field.SquaresCreate.Coordinate;
-import field.CreateFieldGUI;
-import field.SquaresCreate.Square;
+import ru.parinov.field.PaintGame;
+import ru.parinov.field.Shift;
+import ru.parinov.field.SquaresCreate.Coordinate;
+import ru.parinov.field.CreateFieldGUI;
+import ru.parinov.field.SquaresCreate.Square;
 
-import java.awt.*;
 import java.util.*;
 import java.util.List;
 

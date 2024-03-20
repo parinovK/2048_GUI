@@ -1,6 +1,6 @@
-package field;
+package ru.parinov.field;
 
-import mainCode.Game;
+import ru.parinov.Game;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

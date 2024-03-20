@@ -1,7 +1,7 @@
-package field;
+package ru.parinov.field;
 
-import field.SquaresCreate.Coordinate;
-import field.SquaresCreate.Square;
+import ru.parinov.field.SquaresCreate.Coordinate;
+import ru.parinov.field.SquaresCreate.Square;
 
 import java.util.ArrayList;
 import java.util.List;

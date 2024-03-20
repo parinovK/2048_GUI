@@ -1,4 +1,4 @@
-package field.SquaresCreate;
+package ru.parinov.field.SquaresCreate;
 
 public class Coordinate{
     private final int x;

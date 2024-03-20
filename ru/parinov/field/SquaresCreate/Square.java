@@ -1,6 +1,6 @@
 //получение квадрата по четырем точкам, каждая точка - положение в координатах
 
-package field.SquaresCreate;
+package ru.parinov.field.SquaresCreate;
 
 import java.util.ArrayList;
 import java.util.List;

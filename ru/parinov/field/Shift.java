@@ -1,4 +1,4 @@
-package field;
+package ru.parinov.field;
 
 public enum Shift {
     LEFT,

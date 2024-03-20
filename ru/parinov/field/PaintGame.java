@@ -1,8 +1,9 @@
-package field;
+package ru.parinov.field;
 
-import mainCode.*;
+import ru.parinov.field.SquaresCreate.Square;
+import ru.parinov.ConfigGame;
+import ru.parinov.Game;
 
-import field.SquaresCreate.Square;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;

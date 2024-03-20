@@ -1,4 +1,4 @@
-package mainCode;
+package ru.parinov;
 
 import java.awt.*;
 

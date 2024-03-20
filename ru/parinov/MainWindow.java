@@ -1,6 +1,6 @@
-package mainCode;
+package ru.parinov;
 
-import field.PaintGame;
+import ru.parinov.field.PaintGame;
 
 import javax.swing.*;
 
@@ -21,6 +21,7 @@ public class MainWindow extends JFrame {
         add(new PaintGame());
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
         setLocationRelativeTo(null);
         setVisible(true);
         setResizable(false);

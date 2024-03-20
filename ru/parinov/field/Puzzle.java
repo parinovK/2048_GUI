@@ -1,6 +1,6 @@
-package field;
+package ru.parinov.field;
 
-import mainCode.ConfigGame;
+import ru.parinov.ConfigGame;
 
 import java.awt.*;
 
