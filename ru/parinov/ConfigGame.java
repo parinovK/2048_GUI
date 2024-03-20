@@ -7,4 +7,5 @@ public class ConfigGame {
     public static final Dimension DESIRED_SIZE =
             new Dimension(600, 600);
     public static final Font fontForBlock = new Font("TimesRoman", Font.BOLD, 68);
+    public static final boolean debugCLI = true;
 }

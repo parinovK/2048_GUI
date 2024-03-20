@@ -37,9 +37,10 @@ public class Game{
     }
 
     private Game() {
+        if (ConfigGame.debugCLI)
+            System.out.println("Debug CLI is enabled.");
         createFieldCLI();
         createFieldGUI();
-        System.out.println("Matrix begin:");
         outputFieldCLI();
     }
 
@@ -76,11 +77,13 @@ public class Game{
     }
 
     private void outputFieldCLI() {
-        System.out.println();
-        for (int i = 0; i < ConfigGame.fieldSize; i++) {
-            for (int j = 0; j < ConfigGame.fieldSize; j++)
-                System.out.print(matrixField[i][j] + "\t");
-            System.out.println();
+        if (ConfigGame.debugCLI) {
+            System.out.println("\nMatrix for debug: ");
+            for (int i = 0; i < ConfigGame.fieldSize; i++) {
+                for (int j = 0; j < ConfigGame.fieldSize; j++)
+                    System.out.print(matrixField[i][j] + "\t");
+                System.out.println();
+            }
         }
     }
 
