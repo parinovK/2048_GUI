@@ -1,6 +1,6 @@
 package ru.parinov.field;
 
-public enum Shift {
+public enum Direction {
     LEFT,
     RIGHT,
     UP,

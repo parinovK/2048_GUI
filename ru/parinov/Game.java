@@ -3,7 +3,7 @@
 package ru.parinov;
 
 import ru.parinov.field.PaintGame;
-import ru.parinov.field.Shift;
+import ru.parinov.field.Direction;
 import ru.parinov.field.SquaresCreate.Coordinate;
 import ru.parinov.field.CreateFieldGUI;
 import ru.parinov.field.SquaresCreate.Square;
@@ -32,16 +32,18 @@ public class Game{
     }
 
     private Game() {
-        if (GameConfig.debugCLI)
-            System.out.println("Debug CLI is enabled.");
         createFieldCLI();
         createFieldGUI();
-        outputFieldCLI();
+        if (Config.debugCLI) {
+            System.out.println("Debug CLI is enabled.");
+            System.out.println("init field success.");
+            outputFieldCLI();
+        }
     }
 
     public boolean validateGameOver(){
-        for (int i = 0; i < GameConfig.fieldSize; i++)
-            for (int j = 0; j < GameConfig.fieldSize; j++)
+        for (int i = 0; i < Config.fieldSize; i++)
+            for (int j = 0; j < Config.fieldSize; j++)
                 if (matrixField[i][j] == 0)
                     return false;
         return true;
@@ -49,8 +51,8 @@ public class Game{
 
     private void createFieldGUI() {
         CreateFieldGUI field = new CreateFieldGUI(
-                GameConfig.DESIRED_SIZE.height/ GameConfig.fieldSize,
-                GameConfig.DESIRED_SIZE.height
+                Config.DESIRED_SIZE.height/ Config.fieldSize,
+                Config.DESIRED_SIZE.height
         );
         allCoordinates = field.calculateCoordinates();
         for (int i = 0; i < allCoordinates.size(); i++) {
@@ -63,18 +65,17 @@ public class Game{
     }
 
     private void createFieldCLI() {
-        matrixField = new int[GameConfig.fieldSize][GameConfig.fieldSize];
-        for (int i = 0; i < GameConfig.fieldSize; i++)
-            for (int j = 0; j < GameConfig.fieldSize; j++)
+        matrixField = new int[Config.fieldSize][Config.fieldSize];
+        for (int i = 0; i < Config.fieldSize; i++)
+            for (int j = 0; j < Config.fieldSize; j++)
                 matrixField[i][j] = 0;
         setBeginPlacesToField(matrixField);
     }
 
     private void outputFieldCLI() {
-        if (GameConfig.debugCLI) {
-            System.out.println("\nMatrix for debug: ");
-            for (int i = 0; i < GameConfig.fieldSize; i++) {
-                for (int j = 0; j < GameConfig.fieldSize; j++)
+        if (Config.debugCLI) {
+            for (int i = 0; i < Config.fieldSize; i++) {
+                for (int j = 0; j < Config.fieldSize; j++)
                     System.out.print(matrixField[i][j] + "\t");
                 System.out.println();
             }
@@ -93,7 +94,7 @@ public class Game{
     }
 
     private void setBeginPlacesToField(int[][] matrixField) {
-        int maxValue = (GameConfig.fieldSize * GameConfig.fieldSize) - 1;
+        int maxValue = (Config.fieldSize * Config.fieldSize) - 1;
         int minValue = 0;
         Set<Integer> places = new HashSet<>();
 
@@ -102,223 +103,182 @@ public class Game{
         }
         int line;
         for (var place : places) {
-            line = place / GameConfig.fieldSize;
-            matrixField[line][place - (line * GameConfig.fieldSize)] = 2;
+            line = place / Config.fieldSize;
+            matrixField[line][place - (line * Config.fieldSize)] = 2;
         }
     }
 
-    public void shiftMatrix(Shift shift, PaintGame game){
+    public void shiftMatrix(Direction direction, PaintGame game){
         if (validateGameOver())
             return;
-        boolean addedDigitInField = false;
-        switch (shift) {
-            case LEFT -> addedDigitInField = shiftLeft();
-            case RIGHT -> addedDigitInField = shiftRight();
-            case UP -> addedDigitInField = shiftUp();
-            case DOWN -> addedDigitInField = shiftDown();
+        if (Config.debugCLI) {
+            System.out.println("---------------------");
+            System.out.println("Matrix before shift: ");
+            outputFieldCLI();
+            System.out.println("Shift direction: " + direction);
+        }
+        boolean addedDigitInField = moveByKeypress(direction);
+        if (Config.debugCLI){
+            System.out.println("Matrix before shift: ");
+            outputFieldCLI();
         }
         addedDigitToMatrix(addedDigitInField);
-        outputFieldCLI();
         game.repaint();
     }
 
+    private boolean moveByKeypress(Direction direction){
+        boolean isMoved = false, isShift = false, isFindDuplicate = false;
+        for (int i = 0; i < Config.fieldSize; i++) {
+            for (int j = 0; j < Config.fieldSize; j++) {
+                if (matrixField[i][j] != 0) {
+                    isShift = findZeroInLine(direction, i, j);
+                }
+            }
+        }
+        if (isShift)
+            isMoved = true;
+
+        for (int i = 0; i < Config.fieldSize; i++) {
+            for (int j = 0; j < Config.fieldSize; j++) {
+                isFindDuplicate = findDuplicate(direction, i, j);
+                if (isFindDuplicate)
+                    isMoved = true;
+            }
+        }
+        if (isFindDuplicate)
+            isMoved = true;
+
+        if (Config.debugCLI) {
+            System.out.println("Added digit: " + isMoved);
+        }
+        return isMoved;
+    }
+
+    private boolean findZeroInLine(Direction direction, int row, int column){
+        if (matrixField[row][column] == 0)
+            return false;
+        int temp;
+        if (direction == Direction.LEFT){
+            if (column == 0)
+                return false;
+            temp = column;
+            while (temp-1 >= 0 && matrixField[row][temp-1] == 0){
+                temp--;
+            }
+            if (temp != column) {
+                matrixField[row][temp] = matrixField[row][column];
+                matrixField[row][column] = 0;
+                return true;
+            }
+        }
+        if (direction == Direction.RIGHT){
+            if (column == Config.fieldSize)
+                return false;
+            temp = column;
+            while (temp+1 < Config.fieldSize && matrixField[row][temp+1] == 0){
+                temp++;
+            }
+            if (temp != column) {
+                matrixField[row][temp] = matrixField[row][column];
+                matrixField[row][column] = 0;
+                return true;
+            }
+        }
+
+        if (direction == Direction.UP){
+            if (row == 0)
+                return false;
+            temp = row;
+            while (temp-1 >= 0 && matrixField[temp-1][column] == 0){
+                temp--;
+            }
+            if (temp != row){
+                matrixField[temp][column] = matrixField[row][column];
+                matrixField[row][column] = 0;
+                return true;
+            }
+        }
+
+        if (direction == Direction.DOWN){
+            if (row == Config.fieldSize)
+                return false;
+            temp = row;
+            while (temp+1 < Config.fieldSize && matrixField[temp+1][column] == 0){
+                temp++;
+            }
+            if (temp != row){
+                matrixField[temp][column] = matrixField[row][column];
+                matrixField[row][column] = 0;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean findDuplicate(Direction direction, int line, int column){
+        if (matrixField[line][column] == 0)
+            return false;
+        if (direction == Direction.LEFT) {
+            if (column != 0 &&
+                    matrixField[line][column] == matrixField[line][column - 1]) {
+                matrixField[line][column - 1] += matrixField[line][column];
+                matrixField[line][column] = 0;
+                return true;
+            }
+        }
+        if (direction == Direction.RIGHT) {
+            if (column != Config.fieldSize-1 &&
+                    matrixField[line][column] == matrixField[line][column + 1]) {
+                matrixField[line][column + 1] += matrixField[line][column];
+                matrixField[line][column] = 0;
+                return true;
+            }
+        }
+        if (direction == Direction.UP) {
+            if (line != 0 &&
+                    matrixField[line][column] == matrixField[line - 1][column]) {
+                matrixField[line - 1][column] += matrixField[line][column];
+                matrixField[line][column] = 0;
+                return true;
+            }
+        }
+
+        if (direction == Direction.DOWN) {
+            if (line != Config.fieldSize -1 &&
+                    (line + 1) < Config.fieldSize &&
+                    matrixField[line][column] == matrixField[line + 1][column]) {
+                matrixField[line + 1][column] += matrixField[line][column];
+                matrixField[line][column] = 0;
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void addedDigitToMatrix(boolean addedDigitInField){
-        if (!addedDigitInField)//если добавление разрешено
+        if (!addedDigitInField) {//если добавление не разрешено
+            if (Config.debugCLI)
+                System.out.println("there are still moves. There is no need to add two. Pass.");
             return;
+        }
         List<Integer> positionZero = new ArrayList<>();
-        outputFieldCLI();
-        for (int i = 0; i < GameConfig.fieldSize; i++) {
-            for (int j = 0; j < GameConfig.fieldSize; j++) {
+        for (int i = 0; i < Config.fieldSize; i++) {
+            for (int j = 0; j < Config.fieldSize; j++) {
                 if (matrixField[i][j] == 0) {
                     positionZero.add(i);
                     positionZero.add(j);
                 }
             }
         }
+        for (var element : positionZero){
+            System.out.print(element+" ");
+        }
         int randomPlace = (int)(Math.random()*(positionZero.size()-1));
         matrixField[positionZero.get(randomPlace)][positionZero.get(randomPlace+1)] = 2;
-    }
-
-    private boolean shiftLeft(){
-        boolean addedDigitInField = false;
-        boolean isShift = true;
-        while (isShift) {
-            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                    if (matrixField[i][j] != 0) {
-                        isShift = findZeroInLine(Shift.LEFT, i, j);//максимально сдвигаем по нулям
-                        if (isShift)
-                            addedDigitInField = true;
-
-                    }
-                }
-            }
+        if (Config.debugCLI){
+            System.out.println("There are no moves. Allowed to add two");
+            System.out.println("matrix after adding two:");
+            outputFieldCLI();
         }
-        for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-            for (int j = GameConfig.fieldSize - 1; j >= 1; j--) {
-                isShift = findDuplicate(Shift.LEFT, i, j);
-                if (isShift)
-                    addedDigitInField = true;
-            }
-        }
-        return addedDigitInField;
-    }
-
-    private boolean shiftRight(){
-        boolean addedDigitInField = false;
-        boolean isShift = true;
-        while (isShift) {
-            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                    if (matrixField[i][j] != 0) {
-                        isShift = findZeroInLine(Shift.RIGHT, i, j);//максимально сдвигаем по нулям
-                        if (isShift)
-                            addedDigitInField = true;
-                    }
-                }
-            }
-        }
-        for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-            for (int j = (GameConfig.fieldSize - 1) - 1; j >= 0; j--) {
-                isShift = findDuplicate(Shift.RIGHT, i, j);
-                if (isShift)
-                    addedDigitInField = true;
-            }
-        }
-        return addedDigitInField;
-    }
-
-    private boolean shiftUp(){
-        boolean addedDigitInField = false;
-        boolean isShift = true;
-        while (isShift) {
-            for (int i = GameConfig.fieldSize; i >= 0; i--) {
-                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                    if (matrixField[i][j] != 0) {
-                        isShift = findZeroInLine(Shift.UP, i, j);//максимально сдвигаем по нулям
-                        if (isShift)
-                            addedDigitInField = true;
-                    }
-                }
-            }
-        }
-        for (int i = GameConfig.fieldSize - 1; i >= 1; i--) {
-            for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                isShift = findDuplicate(Shift.UP, i, j);
-                if (isShift)
-                    addedDigitInField = true;
-            }
-        }
-        return addedDigitInField;
-    }
-
-    private boolean shiftDown(){
-        boolean addedDigitInField = false;
-        boolean isShift = true;
-        while (isShift) {
-            for (int i = GameConfig.fieldSize - 1; i >= 0; i--) {
-                for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                    if (matrixField[i][j] != 0) {
-                        isShift = findZeroInLine(Shift.DOWN, i, j);//максимально сдвигаем по нулям
-                        if (isShift)
-                            addedDigitInField = true;
-                    }
-                }
-            }
-        }
-        for (int i = (GameConfig.fieldSize - 1) - 1; i >= 0; i--) {
-            for (int j = GameConfig.fieldSize - 1; j >= 0; j--) {
-                isShift = findDuplicate(Shift.DOWN, i, j);
-                if (isShift)
-                    addedDigitInField = true;
-            }
-        }
-        System.out.println("Added digit: " + addedDigitInField);
-        return addedDigitInField;
-    }
-
-    private boolean findZeroInLine(Shift shift, int index_line, int index_digit_in_line){ //вернет позицию первого нуля в строке
-        if (matrixField[index_line][index_digit_in_line] == 0)
-            return false;
-        int temp;
-        if (shift == Shift.LEFT){
-            temp = index_digit_in_line;
-            while (temp-1 >= 0 && matrixField[index_line][temp-1] == 0){
-                temp--;
-            }
-            if (temp != index_digit_in_line) {
-                matrixField[index_line][temp] = matrixField[index_line][index_digit_in_line];
-                matrixField[index_line][index_digit_in_line] = 0;
-                return true;
-            }
-        }
-        if (shift == Shift.RIGHT){
-            temp = index_digit_in_line;
-            while (temp+1 < GameConfig.fieldSize && matrixField[index_line][temp+1] == 0){
-                temp++;
-            }
-            if (temp != index_digit_in_line) {
-                matrixField[index_line][temp] = matrixField[index_line][index_digit_in_line];
-                matrixField[index_line][index_digit_in_line] = 0;
-                return true;
-            }
-        }
-
-        if (shift == Shift.UP){
-            temp = index_line;
-            while (temp-1 >= 0 && matrixField[temp-1][index_digit_in_line] == 0){
-                temp--;
-            }
-            if (temp != index_line){
-                matrixField[temp][index_digit_in_line] = matrixField[index_line][index_digit_in_line];
-                matrixField[index_line][index_digit_in_line] = 0;
-                return true;
-            }
-        }
-
-        if (shift == Shift.DOWN){
-            temp = index_line;
-            while (temp+1 < GameConfig.fieldSize && matrixField[temp+1][index_digit_in_line] == 0){
-                temp++;
-            }
-            if (temp != index_line){
-                matrixField[temp][index_digit_in_line] = matrixField[index_line][index_digit_in_line];
-                matrixField[index_line][index_digit_in_line] = 0;
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean findDuplicate(Shift shift, int line, int column){
-        if (matrixField[line][column] == 0)
-            return false;
-        if (shift == Shift.LEFT) {
-            if (matrixField[line][column] == matrixField[line][column - 1]) {
-                matrixField[line][column - 1] += matrixField[line][column];
-                matrixField[line][column] = 0;
-                return true;
-            }
-        }
-        if (shift == Shift.RIGHT)
-            if (matrixField[line][column] == matrixField[line][column + 1]) {
-                matrixField[line][column + 1] += matrixField[line][column];
-                matrixField[line][column] = 0;
-                return true;
-            }
-        if (shift == Shift.UP)
-            if (matrixField[line][column] == matrixField[line - 1][column]) {
-                matrixField[line - 1][column] += matrixField[line][column];
-                matrixField[line][column] = 0;
-                return true;
-            }
-
-        if (shift == Shift.DOWN)
-            if ((line+1) < GameConfig.fieldSize && matrixField[line][column] == matrixField[line+1][column]) {
-                matrixField[line + 1][column] += matrixField[line][column];
-                matrixField[line][column] = 0;
-                return true;
-            }
-        return false;
     }
 }

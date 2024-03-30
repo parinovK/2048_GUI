@@ -16,10 +16,10 @@ public class FieldKeyListener extends KeyAdapter {
         super.keyPressed(e);
         int key = e.getKeyCode();
         switch (key) {
-            case KeyEvent.VK_LEFT -> Game.getInstance().shiftMatrix(Shift.LEFT, paintGame);
-            case KeyEvent.VK_RIGHT -> Game.getInstance().shiftMatrix(Shift.RIGHT, paintGame);
-            case KeyEvent.VK_UP -> Game.getInstance().shiftMatrix(Shift.UP, paintGame);
-            case KeyEvent.VK_DOWN -> Game.getInstance().shiftMatrix(Shift.DOWN, paintGame);
+            case KeyEvent.VK_LEFT -> Game.getInstance().shiftMatrix(Direction.LEFT, paintGame);
+            case KeyEvent.VK_RIGHT -> Game.getInstance().shiftMatrix(Direction.RIGHT, paintGame);
+            case KeyEvent.VK_UP -> Game.getInstance().shiftMatrix(Direction.UP, paintGame);
+            case KeyEvent.VK_DOWN -> Game.getInstance().shiftMatrix(Direction.DOWN, paintGame);
         }
     }
 }
