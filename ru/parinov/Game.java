@@ -1,5 +1,3 @@
-//логика игры
-
 package ru.parinov;
 
 import ru.parinov.field.PaintGame;
@@ -261,21 +259,24 @@ public class Game{
                 System.out.println("there are still moves. There is no need to add two. Pass.");
             return;
         }
-        List<Integer> positionZero = new ArrayList<>();
+        List<Coordinate> positionZero = new ArrayList<>();
         for (int i = 0; i < Config.fieldSize; i++) {
             for (int j = 0; j < Config.fieldSize; j++) {
                 if (matrixField[i][j] == 0) {
-                    positionZero.add(i);
-                    positionZero.add(j);
+                    positionZero.add(new Coordinate(i,j));
                 }
             }
         }
-        for (var element : positionZero){
-            System.out.print(element+" ");
+        if (Config.debugCLI) {
+            System.out.println("list of positions of found voids:");
+            for (var element : positionZero)
+                System.out.println(element.getX() + " " + element.getY());
         }
-        int randomPlace = (int)(Math.random()*(positionZero.size()-1));
-        matrixField[positionZero.get(randomPlace)][positionZero.get(randomPlace+1)] = 2;
+        Collections.shuffle(positionZero);
+        matrixField[positionZero.get(0).getX()][positionZero.get(0).getY()] = 2;
         if (Config.debugCLI){
+            System.out.println("a two was added to the position: ");
+            System.out.println(positionZero.get(0).getX() + " " + positionZero.get(0).getY());
             System.out.println("There are no moves. Allowed to add two");
             System.out.println("matrix after adding two:");
             outputFieldCLI();
