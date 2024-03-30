@@ -71,12 +71,10 @@ public class Game{
     }
 
     private void outputFieldCLI() {
-        if (Config.debugCLI) {
-            for (int i = 0; i < Config.fieldSize; i++) {
-                for (int j = 0; j < Config.fieldSize; j++)
-                    System.out.print(matrixField[i][j] + "\t");
-                System.out.println();
-            }
+        for (int i = 0; i < Config.fieldSize; i++) {
+            for (int j = 0; j < Config.fieldSize; j++)
+                System.out.print(matrixField[i][j] + "\t");
+            System.out.println();
         }
     }
 
@@ -113,14 +111,18 @@ public class Game{
             System.out.println("---------------------");
             System.out.println("Matrix before shift: ");
             outputFieldCLI();
-            System.out.println("Shift direction: " + direction);
+            System.out.println("\nShift direction: " + direction);
         }
-        boolean addedDigitInField = moveByKeypress(direction);
-        if (Config.debugCLI){
-            System.out.println("Matrix before shift: ");
-            outputFieldCLI();
+        boolean allowedToAddPuzzle = moveByKeypress(direction);
+        if (allowedToAddPuzzle){
+            if (Config.debugCLI){
+                System.out.println("Matrix before add new puzzle to field: ");
+                outputFieldCLI();
+            }
+            addNewPuzzleToField();
         }
-        addedDigitToMatrix(addedDigitInField);
+        else if (Config.debugCLI)
+            System.out.println("there are still moves. Adding a new puzzle is not allowed\n");
         game.repaint();
     }
 
@@ -128,9 +130,8 @@ public class Game{
         boolean isMoved = false, isShift = false, isFindDuplicate = false;
         for (int i = 0; i < Config.fieldSize; i++) {
             for (int j = 0; j < Config.fieldSize; j++) {
-                if (matrixField[i][j] != 0) {
-                    isShift = findZeroInLine(direction, i, j);
-                }
+                if (matrixField[i][j] != 0)
+                    isShift = slideThroughEmptyPuzzles(direction, i, j);//ищем пустые поля и сдвигаем
             }
         }
         if (isShift)
@@ -138,9 +139,8 @@ public class Game{
 
         for (int i = 0; i < Config.fieldSize; i++) {
             for (int j = 0; j < Config.fieldSize; j++) {
-                isFindDuplicate = findDuplicate(direction, i, j);
-                if (isFindDuplicate)
-                    isMoved = true;
+                if (matrixField[i][j] != 0)
+                    isFindDuplicate = findDuplicate(direction, i, j);//ищем дубликаты и сдвигаем
             }
         }
         if (isFindDuplicate)
@@ -152,9 +152,7 @@ public class Game{
         return isMoved;
     }
 
-    private boolean findZeroInLine(Direction direction, int row, int column){
-        if (matrixField[row][column] == 0)
-            return false;
+    private boolean slideThroughEmptyPuzzles(Direction direction, int row, int column){
         int temp;
         if (direction == Direction.LEFT){
             if (column == 0)
@@ -214,8 +212,6 @@ public class Game{
     }
 
     private boolean findDuplicate(Direction direction, int line, int column){
-        if (matrixField[line][column] == 0)
-            return false;
         if (direction == Direction.LEFT) {
             if (column != 0 &&
                     matrixField[line][column] == matrixField[line][column - 1]) {
@@ -243,7 +239,6 @@ public class Game{
 
         if (direction == Direction.DOWN) {
             if (line != Config.fieldSize -1 &&
-                    (line + 1) < Config.fieldSize &&
                     matrixField[line][column] == matrixField[line + 1][column]) {
                 matrixField[line + 1][column] += matrixField[line][column];
                 matrixField[line][column] = 0;
@@ -253,12 +248,7 @@ public class Game{
         return false;
     }
 
-    private void addedDigitToMatrix(boolean addedDigitInField){
-        if (!addedDigitInField) {//если добавление не разрешено
-            if (Config.debugCLI)
-                System.out.println("there are still moves. There is no need to add two. Pass.");
-            return;
-        }
+    private void addNewPuzzleToField(){
         List<Coordinate> positionZero = new ArrayList<>();
         for (int i = 0; i < Config.fieldSize; i++) {
             for (int j = 0; j < Config.fieldSize; j++) {
@@ -267,18 +257,22 @@ public class Game{
                 }
             }
         }
+
         if (Config.debugCLI) {
             System.out.println("list of positions of found voids:");
             for (var element : positionZero)
                 System.out.println(element.getX() + " " + element.getY());
         }
+
         Collections.shuffle(positionZero);
         matrixField[positionZero.get(0).getX()][positionZero.get(0).getY()] = 2;
+
+        //debug info
         if (Config.debugCLI){
-            System.out.println("a two was added to the position: ");
-            System.out.println(positionZero.get(0).getX() + " " + positionZero.get(0).getY());
-            System.out.println("There are no moves. Allowed to add two");
-            System.out.println("matrix after adding two:");
+            System.out.println("a two was added to the position: " +
+                    positionZero.get(0).getX() + " " + positionZero.get(0).getY());
+            System.out.println("There are no moves. Allowed to add two\n" +
+                    "matrix after adding two:");
             outputFieldCLI();
         }
     }

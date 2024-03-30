@@ -14,7 +14,6 @@ public class Puzzle {
     }
 
     public void paintPuzzle(int x, int y, int blockSize, int digit, Graphics graphics){
-
         int shift = 20;
         final String[] hexColorForPuzzle = {"#eee4da","#eee1c9","#f3b27a","#F69664","#F77C5F","#F75F3B","#EDD073","#EDCC62","#EDC950"};
         graphics.setFont(new Font("TimesRoman", Font.BOLD, 68));
